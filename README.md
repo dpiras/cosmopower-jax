@@ -12,6 +12,8 @@ We are working to make `CosmoPower-JAX` `pip`-installable. In the meantime, if y
 
 We will make some examples available soon.
 
+We currently do not provide the code to train a neural-network model in JAX; if you would like to re-train a JAX-based neural network on different data, [raise an issue](https://github.com/dpiras/cosmopower-jax/issues) or contact [Davide Piras](mailto:davide.piras@unige.ch).
+
 ## Contributing and contacts
 
 Feel free to [fork](https://github.com/dpiras/cosmopower-jax/fork) this repository to work on it; otherwise, please [raise an issue](https://github.com/dpiras/cosmopower-jax/issues) or contact [Davide Piras](mailto:davide.piras@unige.ch).
