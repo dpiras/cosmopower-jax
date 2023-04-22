@@ -6,10 +6,10 @@ from pathlib import Path
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
-PACKAGENAME = 'cosmopower-jax'
+PACKAGENAME = 'cosmopower_jax'
 
 setup(
-    name='cosmopower-jax',
+    name='cosmopower_jax',
     version="0.1.0",
     author='Davide Piras',
     author_email='davide.piras@unige.ch',
@@ -24,9 +24,8 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.8',
-    install_requires=['pickle',
-                      'jax',
+    python_requires='>=3.9',
+    install_requires=['jax',
                       'matplotlib>=3.1.2',
                       'numpy>=1.17.4',
                       ]
