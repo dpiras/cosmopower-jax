@@ -4,13 +4,28 @@
 
 `CosmoPower-JAX` in an extension of the [CosmoPower](https://github.com/alessiospuriomancini/cosmopower) framework to emulate cosmological power spectra in a differentiable way. With `CosmoPower-JAX` you can efficiently run Hamiltonian Monte Carlo with hundreds of parameters (for example, nuisance parameters describing systematic effects), on CPUs and GPUs, in a fraction of the time which would be required with traditional methods. We provide some examples on how to use the neural emulators below, and more applications in our paper (coming soon).
 
-## Usage
+Of course, with `CosmoPower-JAX` you can also obtain efficient and differentiable predictions of cosmological power spectra. We show how to achieve this in 3 lines of code below.
 
-We are working to make `CosmoPower-JAX` `pip`-installable. In the meantime, if you want to use the emulators of the matter power spectrum or of the CMB temperature and polarisation spectra, you can do as follows (coming soon).
+## Installation
 
-## Example
+To install `CosmoPower-JAX`, you can simply use `pip`:
 
-We will make some examples available soon.
+        pip install cosmopower_jax
+
+We recommend doing it in a fresh `conda` environment, to avoid clashes (e.g. `conda create -n cpj python=3.9 && conda activate cpj`). Alternatively, you can:
+
+        git clone https://github.com/dpiras/cosmopower-jax.git
+        cd cosmopower-jax
+        pip install . 
+
+The latter will also give you access to a Jupyter notebook with some examples.
+
+## Usage & example
+
+After the installation, getting a prediction is as simple as:
+
+. In the meantime, if you want to use the emulators of the matter power spectrum or of the CMB temperature and polarisation spectra, you can do as follows (coming soon).
+
 
 We currently do not provide the code to train a neural-network model in JAX; if you would like to re-train a JAX-based neural network on different data, [raise an issue](https://github.com/dpiras/cosmopower-jax/issues) or contact [Davide Piras](mailto:davide.piras@unige.ch).
 
