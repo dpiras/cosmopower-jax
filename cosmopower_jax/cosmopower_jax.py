@@ -59,7 +59,7 @@ class CosmoPowerJAX:
             n_modes, modes_l, \
             n_hidden, n_layers, architecture = pickle.load(probe_file) 
             
-            probe_file = pkg_resources.open_binary(trained_models, 'mpk_nlboost.pkl')
+            probe_file = pkg_resources.open_binary(trained_models, 'mpk_boost.pkl')
             weights, hyper_params, \
             param_train_mean, param_train_std, \
             feature_train_mean, feature_train_std, \
