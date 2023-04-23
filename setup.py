@@ -19,7 +19,7 @@ setup(
     url='https://github.com/dpiras/cosmopower-jax',
     license='GNU General Public License v3.0 (GPLv3)',
     packages=find_packages(),
-    package_data= {'cosmopower_jax': ['trained_models/*.pkl']},
+    package_data= {'cosmopower_jax': ['trained_models/*.pkl', 'pca_utils/*.npy']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
