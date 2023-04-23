@@ -10,7 +10,7 @@ PACKAGENAME = 'cosmopower_jax'
 
 setup(
     name='cosmopower_jax',
-    version="0.1.0",
+    version="0.1.1",
     author='Davide Piras',
     author_email='davide.piras@unige.ch',
     description='Differentiable cosmological emulators',
@@ -27,6 +27,7 @@ setup(
     ],
     python_requires='>=3.9',
     install_requires=['jax',
+                      'jaxlib',
                       'matplotlib>=3.1.2',
                       'numpy>=1.17.4',
                       ]
