@@ -17,7 +17,9 @@ To install `CosmoPower-JAX`, you can simply use `pip`:
 
     pip install cosmopower-jax
 
-We recommend doing it in a fresh `conda` environment, to avoid clashes (e.g. `conda create -n cpj python=3.9 && conda activate cpj`). Alternatively, you can:
+We recommend doing it in a fresh `conda` environment, to avoid clashes (e.g. `conda create -n cpj python=3.9 && conda activate cpj`). 
+
+Alternatively, you can:
 
     git clone https://github.com/dpiras/cosmopower-jax.git
     cd cosmopower-jax
