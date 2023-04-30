@@ -1,7 +1,12 @@
 # CosmoPower-JAX
 
-(We will add a logo soon!)
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/25639122/235351711-39be2b50-dbcb-4964-adbf-f38ffc74ef5f.jpeg" width="300" height="202.5"
+ alt="CPJ_logo"/>
+</p>
+
+     
 `CosmoPower-JAX` in an extension of the [CosmoPower](https://github.com/alessiospuriomancini/cosmopower) framework to emulate cosmological power spectra in a differentiable way. With `CosmoPower-JAX` you can efficiently run Hamiltonian Monte Carlo with hundreds of parameters (for example, nuisance parameters describing systematic effects), on CPUs and GPUs, in a fraction of the time which would be required with traditional methods. We provide some examples on how to use the neural emulators below, and more applications in our paper (coming soon).
 
 Of course, with `CosmoPower-JAX` you can also obtain efficient and differentiable predictions of cosmological power spectra. We show how to achieve this in less than 5 lines of code below.
