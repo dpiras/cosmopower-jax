@@ -7,7 +7,7 @@
 </p>
 
      
-`CosmoPower-JAX` in an extension of the [CosmoPower](https://github.com/alessiospuriomancini/cosmopower) framework to emulate cosmological power spectra in a differentiable way. With `CosmoPower-JAX` you can efficiently run Hamiltonian Monte Carlo with hundreds of parameters (for example, nuisance parameters describing systematic effects), on CPUs and GPUs, in a fraction of the time which would be required with traditional methods. We provide some examples on how to use the neural emulators below, and more applications in our paper (coming soon).
+`CosmoPower-JAX` in an extension of the [CosmoPower](https://github.com/alessiospuriomancini/cosmopower) framework to emulate cosmological power spectra in a differentiable way. With `CosmoPower-JAX` you can efficiently run Hamiltonian Monte Carlo with hundreds of parameters (for example, nuisance parameters describing systematic effects), on CPUs and GPUs, in a fraction of the time which would be required with traditional methods. We provide some examples on how to use the neural emulators below, and more applications [in our paper](https://arxiv.org/abs/2305.06347).
 
 Of course, with `CosmoPower-JAX` you can also obtain efficient and differentiable predictions of cosmological power spectra. We show how to achieve this in less than 5 lines of code below.
 
@@ -51,6 +51,21 @@ Feel free to [fork](https://github.com/dpiras/cosmopower-jax/fork) this reposito
 ## Citation
 If you use `CosmoPower-JAX` in your work, please cite both papers as follows:
 
+    @article{Piras23,
+             title={CosmoPower-JAX: high-dimensional Bayesian inference with
+             differentiable cosmological emulators},
+             author = {Piras, Davide and Spurio Mancini, Alessio},
+             journal = {arXiv e-prints},
+             year = 2023,
+             month = may,
+             eid = {arXiv:2305.06347},
+             pages = {arXiv:2305.06347},
+             archivePrefix = {arXiv},
+             eprint = {2305.06347},
+             adsurl = {https://ui.adsabs.harvard.edu/abs/2023arXiv230506347P},
+            }
+
+    
     @article{SpurioMancini2022,
              title={CosmoPower: emulating cosmological power spectra for 
              accelerated Bayesian inference from next-generation surveys},
@@ -68,21 +83,6 @@ If you use `CosmoPower-JAX` in your work, please cite both papers as follows:
              pages={1771–1788}
              }
              
-    @article{Piras23,
-             title={CosmoPower-JAX: high-dimensional Bayesian inference with 
-             differentiable cosmological emulators},
-             volume={TBC},
-             ISSN={TBC},
-             url={TBC},
-             DOI={TBC},
-             number={TBC},
-             journal={TBC},
-             publisher={TBC},
-             author={Piras, Davide and Spurio Mancini, Alessio},
-             year={2023},
-             month={TBC},
-             pages={TBC}
-             }
 
 ## License
 
