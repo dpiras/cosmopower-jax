@@ -5,6 +5,15 @@
   <img src="https://user-images.githubusercontent.com/25639122/235351711-39be2b50-dbcb-4964-adbf-f38ffc74ef5f.jpeg" width="300" height="202.5"
  alt="CPJ_logo"/>
 </p>
+<div align="center">
+  
+![](https://img.shields.io/badge/Python-181717?style=plastic&logo=python)
+![](https://img.shields.io/badge/Author-Davide%20Piras%20-181717?style=plastic)
+![](https://img.shields.io/badge/Installation-pip%20install%20cosmopower--jax-181717?style=plastic)
+[![arXiv](https://img.shields.io/badge/arXiv-2305.06347-b31b1b.svg)](https://arxiv.org/abs/2305.06347)
+
+
+</div>
 
      
 `CosmoPower-JAX` in an extension of the [CosmoPower](https://github.com/alessiospuriomancini/cosmopower) framework to emulate cosmological power spectra in a differentiable way. With `CosmoPower-JAX` you can efficiently run Hamiltonian Monte Carlo with hundreds of parameters (for example, nuisance parameters describing systematic effects), on CPUs and GPUs, in a fraction of the time which would be required with traditional methods. We provide some examples on how to use the neural emulators below, and more applications [in our paper](https://arxiv.org/abs/2305.06347).
@@ -42,7 +51,28 @@ Similarly, we can also compute derivatives like:
 
     emulator_derivatives = emulator.derivative(cosmo_params)
 
-We provide a full walkthrough in the accompanying [Jupyter notebook](https://github.com/dpiras/cosmopower-jax/blob/main/notebooks/emulators_example.ipynb), and we describe `CosmoPower-JAX` in detail in the release paper. We currently do not provide the code to train a neural-network model in JAX; if you would like to re-train a JAX-based neural network on different data, [raise an issue](https://github.com/dpiras/cosmopower-jax/issues) or contact [Davide Piras](mailto:davide.piras@unige.ch).
+We also support reusing original `CosmoPower` models, which you can now use in JAX without retraining. In that case, you should: 
+
+```
+   git clone https://github.com/dpiras/cosmopower-jax.git
+   cd cosmopower-jax
+```
+
+and move your model(s) `.pkl` files into the folder `cosmopower_jax/trained_models`. At this point:
+
+- if you can call your models from the `cosmopower-jax` folder you are in, you should be good to go;
+- otherwise, run first `pip install .`, and then you should be able to call your custom models from anywhere.
+ 
+To finally call a custom model, you can run:
+
+```
+from cosmopower_jax.cosmopower_jax import CosmoPowerJAX as CPJ
+emulator_custom = CPJ(probe='custom_log', filename='<custom_filename>.pkl')
+```
+
+where `<custom_filename>.pkl` is the filename (only, no path) with your custom model, and `custom_log` indicates that your model was trained on log-spectra, so all predictions will be returned elevated to the power of 10. Alternatively, you can pass `custom_pca`, and you will automatically get the predictions for a model trained with `PCAplusNN`.
+
+We provide a full walkthrough and all instructions in the accompanying [Jupyter notebook](https://github.com/dpiras/cosmopower-jax/blob/main/notebooks/emulators_example.ipynb), and we describe `CosmoPower-JAX` in detail in the release paper. We currently do not provide the code to train a neural-network model in JAX; if you would like to re-train a JAX-based neural network on different data, [raise an issue](https://github.com/dpiras/cosmopower-jax/issues) or contact [Davide Piras](mailto:davide.piras@unige.ch).
 
 ## Contributing and contacts
 
