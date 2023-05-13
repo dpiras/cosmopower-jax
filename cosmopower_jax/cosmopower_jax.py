@@ -24,29 +24,41 @@ class CosmoPowerJAX:
     probe : string
         The probe being considered to make predictions. 
         Must be one of (the names are hopefully self-explanatory):
-        'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin'
+        'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'
+    filename : string, default=None
+        In case you want to restore from a custom file with the same pickle format
+        as the provided ones, indicate the name to the .pkl file here.
+        The .pkl file should be placed in the `cosmopower_jax/trained_models/` folder.
+        You can specify either a .pkl file for a model trained on log-spectra ('custom_log'),
+        or for a model trained with PCAplusNN ('custom_pca').
+        This is generally to upload models trained with the original CP, 
+        so you will also probably need to pip install tensorflow.
     """
-    def __init__(self, probe): 
-        if probe not in ['cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin']:
+    def __init__(self, probe, filename=None): 
+        if probe not in ['cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log', 'custom_pca']:
             raise ValueError(f"Probe not known. It should be one of "
-                         f"'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin'; found '{probe}'") 
+                         f"'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'; found '{probe}'") 
         
-        if probe in ['cmb_tt', 'cmb_ee', 'mpk_lin', 'mpk_boost', 'mpk_nonlin']:
+        if probe in ['cmb_tt', 'cmb_ee', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log']:
             self.log = True
         else:
             self.log = False
-            # prepare for PCA: load pre-trained PCA matrix, and mean and std dev of the training data
-            pca_matrix_file = pkg_resources.open_binary(pca_utils, f'{probe}_pca_transform_matrix.npy')
-            pca_matrix = np.load(pca_matrix_file)
-            self.pca_matrix = pca_matrix
-            
-            training_mean_file = pkg_resources.open_binary(pca_utils, f'{probe}_training_mean.npy')
-            training_mean = np.load(training_mean_file)
-            self.training_mean = training_mean
-          
-            training_std_file = pkg_resources.open_binary(pca_utils, f'{probe}_training_std.npy')
-            training_std = np.load(training_std_file)
-            self.training_std = training_std
+            if probe == 'custom_pca':
+                # we deal with this case below
+                pass
+            else:
+                # prepare for PCA: load pre-trained PCA matrix, and mean and std dev of the training data
+                pca_matrix_file = pkg_resources.open_binary(pca_utils, f'{probe}_pca_transform_matrix.npy')
+                pca_matrix = np.load(pca_matrix_file)
+                self.pca_matrix = pca_matrix
+
+                training_mean_file = pkg_resources.open_binary(pca_utils, f'{probe}_training_mean.npy')
+                training_mean = np.load(training_mean_file)
+                self.training_mean = training_mean
+
+                training_std_file = pkg_resources.open_binary(pca_utils, f'{probe}_training_std.npy')
+                training_std = np.load(training_std_file)
+                self.training_std = training_std
 
         if probe == 'mpk_nonlin':
             # here we need to combine the linear and non-linear one, so it is a big less elegant
@@ -67,15 +79,48 @@ class CosmoPowerJAX:
             n_modes, modes, \
             n_hidden, n_layers, architecture = pickle.load(probe_file) 
         
-        else:
-            # Load pre-trained model
-            probe_file = pkg_resources.open_binary(trained_models, f'{probe}.pkl')
-            weights, hyper_params, \
+        elif probe == 'custom_pca':
+            probe_file = pkg_resources.open_binary(trained_models, filename)
+            # in this case hyperparams and weights/biases were loaded separately
+            # so we have to zip them
+            weights_, biases_, alphas_, betas_, \
             param_train_mean, param_train_std, \
             feature_train_mean, feature_train_std, \
-            n_parameters, parameters, \
-            n_modes, modes, \
+            self.training_mean, self.training_std, \
+            parameters, n_parameters, \
+            modes, n_modes, \
+            n_pcas, self.pca_matrix, \
             n_hidden, n_layers, architecture = pickle.load(probe_file)
+            hyper_params = list(zip(alphas_, betas_))
+            # we also have to transpose all weights, since in JAX we did differently
+            weights_ = [w.T for w in weights_]
+            weights = list(zip(weights_, biases_))
+            
+        else:
+            # Load pre-trained model
+            if probe == 'custom_log':
+                # in this case hyperparams and weights/biases were loaded separately
+                # so we have to zip them
+                probe_file = pkg_resources.open_binary(trained_models, filename)
+                weights_, biases_, alphas_, betas_, \
+                param_train_mean, param_train_std, \
+                feature_train_mean, feature_train_std, \
+                n_parameters, parameters, \
+                n_modes, modes, \
+                n_hidden, n_layers, architecture = pickle.load(probe_file)
+                hyper_params = list(zip(alphas_, betas_))
+                # we also have to transpose all weights, since in JAX we did differently
+                weights_ = [w.T for w in weights_]
+                weights = list(zip(weights_, biases_))
+            else:
+                # most general case
+                probe_file = pkg_resources.open_binary(trained_models, f'{probe}.pkl')
+                weights, hyper_params, \
+                param_train_mean, param_train_std, \
+                feature_train_mean, feature_train_std, \
+                n_parameters, parameters, \
+                n_modes, modes, \
+                n_hidden, n_layers, architecture = pickle.load(probe_file)
        
         # save useful attributes  
         self.probe = probe
@@ -86,8 +131,8 @@ class CosmoPowerJAX:
         self.feature_train_mean = feature_train_mean
         self.feature_train_std = feature_train_std
         self.n_parameters = n_parameters
-        if probe in ['cmb_pp', 'cmb_te']:
-            # in this case, the modes are the PCA (either 512 or 64) ones, so we have to replace them
+        if probe in ['cmb_pp', 'cmb_te', 'custom_pca']:
+            # in this case, the modes are the PCA ones, so we have to replace them
             self.modes = np.arange(2, 2509)
         else:
             self.modes = modes
@@ -142,7 +187,12 @@ class CosmoPowerJAX:
 
         # Final layer prediction (no activations)
         w, b = weights[-1]
-        preds = jnp.dot(layer_out[-1], w.T) + b[-1]
+        if self.probe == 'custom_log' or self.probe == 'custom_pca':
+            # in original CP models, we assumed a full final bias vector...
+            preds = jnp.dot(layer_out[-1], w.T) + b
+        else:   
+            # ... unlike in cpjax, where we used only a single bias vector
+            preds = jnp.dot(layer_out[-1], w.T) + b[-1]
 
         # Undo the standardisation
         preds = preds * feature_train_std + feature_train_mean
