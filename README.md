@@ -6,11 +6,13 @@
  alt="CPJ_logo"/>
 </p>
 <div align="center">
+  
 ![](https://img.shields.io/badge/Python-181717?style=plastic&logo=python)
-![](https://img.shields.io/badge/Tensorflow-181717?style=plastic&logo=jax)
 ![](https://img.shields.io/badge/Author-Davide%20Piras%20-181717?style=plastic)
-![](https://img.shields.io/badge/Installation-pip%20install%20cosmopower-jax-181717?style=plastic)
-![][arXiv](https://img.shields.io/badge/arXiv-1234.56789-b31b1b.svg)](https://arxiv.org/abs/2305.06347)
+![](https://img.shields.io/badge/Installation-pip%20install%20cosmopower--jax-181717?style=plastic)
+[![arXiv](https://img.shields.io/badge/arXiv-2305.06347-b31b1b.svg)](https://arxiv.org/abs/2305.06347)
+
+
 </div>
 
      
