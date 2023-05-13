@@ -5,12 +5,13 @@
   <img src="https://user-images.githubusercontent.com/25639122/235351711-39be2b50-dbcb-4964-adbf-f38ffc74ef5f.jpeg" width="300" height="202.5"
  alt="CPJ_logo"/>
 </p>
+<div align="center">
 ![](https://img.shields.io/badge/Python-181717?style=plastic&logo=python)
 ![](https://img.shields.io/badge/Tensorflow-181717?style=plastic&logo=jax)
 ![](https://img.shields.io/badge/Author-Davide%20Piras%20-181717?style=plastic)
 ![](https://img.shields.io/badge/Installation-pip%20install%20cosmopower-jax-181717?style=plastic)
-![arXiv](https://img.shields.io/badge/arXiv-1234.56789-b31b1b.svg)](https://arxiv.org/abs/2305.06347)
-
+![][arXiv](https://img.shields.io/badge/arXiv-1234.56789-b31b1b.svg)](https://arxiv.org/abs/2305.06347)
+</div>
 
      
 `CosmoPower-JAX` in an extension of the [CosmoPower](https://github.com/alessiospuriomancini/cosmopower) framework to emulate cosmological power spectra in a differentiable way. With `CosmoPower-JAX` you can efficiently run Hamiltonian Monte Carlo with hundreds of parameters (for example, nuisance parameters describing systematic effects), on CPUs and GPUs, in a fraction of the time which would be required with traditional methods. We provide some examples on how to use the neural emulators below, and more applications [in our paper](https://arxiv.org/abs/2305.06347).
