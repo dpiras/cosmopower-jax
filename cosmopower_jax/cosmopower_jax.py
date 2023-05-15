@@ -131,7 +131,7 @@ class CosmoPowerJAX:
         self.feature_train_mean = feature_train_mean
         self.feature_train_std = feature_train_std
         self.n_parameters = n_parameters
-        if probe in ['cmb_pp', 'cmb_te', 'custom_pca']:
+        if probe in ['cmb_pp', 'cmb_te']:
             # in this case, the modes are the PCA ones, so we have to replace them
             self.modes = np.arange(2, 2509)
         else:
