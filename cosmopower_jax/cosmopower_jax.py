@@ -131,13 +131,33 @@ class CosmoPowerJAX:
         self.feature_train_mean = feature_train_mean
         self.feature_train_std = feature_train_std
         self.n_parameters = n_parameters
+        self.parameters = parameters
         if probe in ['cmb_pp', 'cmb_te']:
             # in this case, the modes are the PCA ones, so we have to replace them
             self.modes = np.arange(2, 2509)
         else:
             self.modes = modes
 
-        
+    def _dict_to_ordered_arr_np(self,
+                               input_dict,
+                               ):
+        """
+        Sort input parameters. Takend verbatim from CP 
+        (https://github.com/alessiospuriomancini/cosmopower/blob/main/cosmopower/cosmopower_NN.py#LL291C1-L308C73)
+
+        Parameters:
+            input_dict (dict [numpy.ndarray]):
+                input dict of (arrays of) parameters to be sorted
+
+        Returns:
+            numpy.ndarray:
+                parameters sorted according to desired order
+        """
+        if self.parameters is not None:
+            return np.stack([input_dict[k] for k in self.parameters], axis=1)
+        else:
+            return np.stack([input_dict[k] for k in input_dict], axis=1)
+
     def _activation(self, x, a, b):
         """Non-linear activation function. Based on the original CosmoPower paper, Eq. A1.
         x is the input of each layer, while a and b are the trainable hyper-parameters. 
@@ -207,18 +227,27 @@ class CosmoPowerJAX:
     
     def predict(self, input_vec):
         """ Emulate cosmological power spectrum, based on the probe specified as input.
-        Need to provide in input the array of cosmological parameters.
+        Need to provide in input the array (or the dictionary) of cosmological parameters.
+        If input is a dictionary, we to convert it to an array internally.
         
         Parameters
         ----------
-        input_vec : array of shape (n_samples, n_parameters) or (n_parameters)
+        input_vec : array of shape (n_samples, n_parameters) or (n_parameters); else, dict
             The cosmological parameters given as input to the network.
+            The order has to be:
+            (for CMB) omega_b, omega_cdm, h, tau, n_s, ln10^10A_s
+            (for mPk) omega_b, omega_cdm, h, n_s, ln10^{10}A_s, (c_min, eta0), z 
+            Alternatively, a dictionary can be passed, and we take care of the conversion internally.
             
         Returns
         -------
         predictions : array
             The cosmological power spectrum as required by input probe.
         """
+        # convert dict to array, if needed
+        if isinstance(input_vec, dict):
+            input_vec = self._dict_to_ordered_arr_np(input_vec)  
+   
         if len(input_vec.shape) == 1:
             input_vec = input_vec.reshape(-1, self.n_parameters)
         assert len(input_vec.shape) == 2
@@ -252,6 +281,10 @@ class CosmoPowerJAX:
         derivatives : array
             The derivatives of the cosmological power spectrum with respect to the input cosmological parameters.
         """
+        # convert dict to array, if needed
+        if isinstance(input_vec, dict):
+            input_vec = self._dict_to_ordered_arr_np(input_vec)  
+            
         if len(input_vec.shape) == 1:
             input_vec = input_vec.reshape(1, self.n_parameters)
         assert len(input_vec.shape) == 2
