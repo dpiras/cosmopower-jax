@@ -51,6 +51,18 @@ Similarly, we can also compute derivatives like:
 
     emulator_derivatives = emulator.derivative(cosmo_params)
 
+Rather than passing an array, as in the original `CosmoPower` syntax you can also pass a dictionary:
+
+    cosmo_params = {'omega_b': [0.025],
+                    'omega_cdm': [0.11],
+                    'h': [0.68],
+                    'tau_reio': [0.1],
+                    'n_s': [0.97],
+                    'ln10^{10}A_s': [3.1],
+                    }
+    emulator = CPJ(probe='cmb_tt')
+    emulator_predictions = emulator.predict(cosmo_params)
+
 We also support reusing original `CosmoPower` models, which you can now use in JAX without retraining. In that case, you should: 
 
 ```
