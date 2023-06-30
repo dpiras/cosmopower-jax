@@ -94,18 +94,24 @@ Feel free to [fork](https://github.com/dpiras/cosmopower-jax/fork) this reposito
 If you use `CosmoPower-JAX` in your work, please cite both papers as follows:
 
     @article{Piras23,
-             title={CosmoPower-JAX: high-dimensional Bayesian inference with
-             differentiable cosmological emulators},
-             author = {Piras, Davide and Spurio Mancini, Alessio},
-             journal = {arXiv e-prints},
+            author = {{Piras}, D. and {Spurio Mancini}, A.},
+            title = "{CosmoPower-JAX: high-dimensional Bayesian inference with differentiable cosmological emulators}",
+          journal = {The Open Journal of Astrophysics},
+         keywords = {Astrophysics - Cosmology and Nongalactic Astrophysics, 
+         Astrophysics - Instrumentation and Methods for Astrophysics, 
+         Computer Science - Machine Learning},
              year = 2023,
-             month = may,
-             eid = {arXiv:2305.06347},
-             pages = {arXiv:2305.06347},
-             archivePrefix = {arXiv},
-             eprint = {2305.06347},
-             adsurl = {https://ui.adsabs.harvard.edu/abs/2023arXiv230506347P},
-            }
+            month = jun,
+           volume = {6},
+              eid = {12},
+            pages = {12},
+              doi = {10.21105/astro.2305.06347},
+    archivePrefix = {arXiv},
+           eprint = {2305.06347},
+     primaryClass = {astro-ph.CO},
+           adsurl = {https://ui.adsabs.harvard.edu/abs/2023arXiv230506347P},
+          adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+    }
 
     
     @article{SpurioMancini2022,
