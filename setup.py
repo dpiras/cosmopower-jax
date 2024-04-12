@@ -10,7 +10,7 @@ PACKAGENAME = 'cosmopower_jax'
 
 setup(
     name='cosmopower_jax',
-    version="0.4.0",
+    version="0.5.0",
     author='Davide Piras',
     author_email='davide.piras@unige.ch',
     description='Differentiable cosmological emulators',
@@ -19,7 +19,7 @@ setup(
     url='https://github.com/dpiras/cosmopower-jax',
     license='GNU General Public License v3.0 (GPLv3)',
     packages=find_packages(),
-    package_data= {'cosmopower_jax': ['trained_models/*.pkl', 'pca_utils/*.npy']},
+    package_data= {'cosmopower_jax': ['trained_models/*.pkl', 'trained_models/*.npz', 'pca_utils/*.npy']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
