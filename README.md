@@ -82,9 +82,13 @@ from cosmopower_jax.cosmopower_jax import CosmoPowerJAX as CPJ
 emulator_custom = CPJ(probe='custom_log', filename='<custom_filename>.pkl')
 ```
 
-where `<custom_filename>.pkl` is the filename (only, no path) with your custom model, and `custom_log` indicates that your model was trained on log-spectra, so all predictions will be returned elevated to the power of 10. Alternatively, you can pass `custom_pca`, and you will automatically get the predictions for a model trained with `PCAplusNN`.
+where `<custom_filename>.pkl` is the filename (only, no path) with your custom model, and `custom_log` indicates that your model was trained on log-spectra, so all predictions will be returned elevated to the power of 10. Alternatively, you can pass `custom_pca`, and you will automatically get the predictions for a model trained with `PCAplusNN`. In this case the parameter dictionary should of course contain the parameter keys corresponding to your trained model.
 
 We provide a full walkthrough and all instructions in the accompanying [Jupyter notebook](https://github.com/dpiras/cosmopower-jax/blob/main/notebooks/emulators_example.ipynb), and we describe `CosmoPower-JAX` in detail in the release paper. We currently do not provide the code to train a neural-network model in JAX; if you would like to re-train a JAX-based neural network on different data, [raise an issue](https://github.com/dpiras/cosmopower-jax/issues) or contact [Davide Piras](mailto:davide.piras@unige.ch).
+
+### Note if you are using `TensorFlow>=2.14`
+If you are reusing a model trained with `CosmoPower` and have a `TensorFlow` version higher or equal to 2.14, you might get an error when trying to load the model, even in `CosmoPower-JAX`. This is [a known issue](https://github.com/alessiospuriomancini/cosmopower/issues/22). In this case, you should run the `convert_tf214.py` script available in this repository to transform your `.pkl` file into a different format (based on `NumPy`) that will then be read by `CosmoPower-JAX`. You only have to do the conversion once for each `.pkl` file you have, make sure you `pip install .` after the conversion, and everything else should remain unchanged.
+
 
 ## Contributing and contacts
 
