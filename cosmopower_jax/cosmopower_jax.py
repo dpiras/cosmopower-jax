@@ -82,17 +82,52 @@ class CosmoPowerJAX:
             n_hidden, n_layers, architecture = pickle.load(probe_file) 
         
         elif probe == 'custom_pca':
-            probe_file = pkg_resources.open_binary(trained_models, filename)
-            # in this case hyperparams and weights/biases were loaded separately
-            # so we have to zip them
-            weights_, biases_, alphas_, betas_, \
-            param_train_mean, param_train_std, \
-            feature_train_mean, feature_train_std, \
-            self.training_mean, self.training_std, \
-            parameters, n_parameters, \
-            modes, n_modes, \
-            n_pcas, self.pca_matrix, \
-            n_hidden, n_layers, architecture = pickle.load(probe_file)
+            try:
+                probe_file = pkg_resources.open_binary(trained_models, filename)
+                # in this case hyperparams and weights/biases were loaded separately
+                # so we have to zip them
+                weights_, biases_, alphas_, betas_, \
+                param_train_mean, param_train_std, \
+                feature_train_mean, feature_train_std, \
+                self.training_mean, self.training_std, \
+                parameters, n_parameters, \
+                modes, n_modes, \
+                n_pcas, self.pca_matrix, \
+                n_hidden, n_layers, architecture = pickle.load(probe_file)
+            except ModuleNotFoundError:
+                # in this case, we fall back to the dictionary that is created
+                # when running the convert_tf214.py script, available in the root folder
+                print('Tried to load pickle file from pre-trained model, but failed.')
+                print('This usually means that you have TF>=2.14, or that you are loading a model' \
+                      ' that was trained on PCA but loaded with the log (or viceversa).')
+                print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                      ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
+                      ' the trained models, and that you ran `pip install .`. Also make sure' \
+                      ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
+                # the [:-4] should ensure we remove the .pkl suffix,
+                # ensuring backward compatibility
+                loaded_variable_dict = pkg_resources.open_binary(trained_models, f'{filename[:-4]}.npz')
+                loaded_variable_dict = np.load(loaded_variable_dict, allow_pickle=True)
+                # boring, but needed as the exec approach did not work here, and we need to assign some properties
+                weights_ = loaded_variable_dict['arr_0'].tolist()['weights_']
+                biases_ = loaded_variable_dict['arr_0'].tolist()['biases_']
+                alphas_ = loaded_variable_dict['arr_0'].tolist()['alphas_']
+                betas_ = loaded_variable_dict['arr_0'].tolist()['betas_']
+                param_train_mean = loaded_variable_dict['arr_0'].tolist()['param_train_mean']
+                param_train_std = loaded_variable_dict['arr_0'].tolist()['param_train_std']
+                feature_train_mean = loaded_variable_dict['arr_0'].tolist()['feature_train_mean']
+                feature_train_std = loaded_variable_dict['arr_0'].tolist()['feature_train_std']
+                self.training_mean = loaded_variable_dict['arr_0'].tolist()['training_mean']
+                self.training_std = loaded_variable_dict['arr_0'].tolist()['training_std']
+                n_parameters = loaded_variable_dict['arr_0'].tolist()['n_parameters']
+                parameters = loaded_variable_dict['arr_0'].tolist()['parameters']
+                n_modes = loaded_variable_dict['arr_0'].tolist()['n_modes']
+                modes = loaded_variable_dict['arr_0'].tolist()['modes']
+                n_pcas = loaded_variable_dict['arr_0'].tolist()['n_pcas']
+                self.pca_matrix = loaded_variable_dict['arr_0'].tolist()['pca_matrix']
+                n_hidden = loaded_variable_dict['arr_0'].tolist()['n_hidden']
+                n_layers = loaded_variable_dict['arr_0'].tolist()['n_layers']
+                architecture = loaded_variable_dict['arr_0'].tolist()['architecture']
             hyper_params = list(zip(alphas_, betas_))
             # we also have to transpose all weights, since in JAX we did differently
             weights_ = [w.T for w in weights_]
@@ -113,24 +148,20 @@ class CosmoPowerJAX:
                     n_parameters, parameters, \
                     n_modes, modes, \
                     n_hidden, n_layers, architecture = pickle.load(probe_file)
-                except:
+                except ModuleNotFoundError:
                     # in this case, we fall back to the dictionary that is created
                     # when running the convert_tf214.py script, available in the root folder
-                    print('Tried to load pickle file from pre-trained model, but failed')
-                    print('This usually means that you have TF>=2.14')
-                    print('Falling back to the dictionary, if case this also fails make sure you' \
-                            ' ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
-                            ' the trained models, and that you ran `pip install .`')
+                    print('Tried to load pickle file from pre-trained model, but failed.')
+                    print('This usually means that you have TF>=2.14, or that you are loading a model' \
+                          ' that was trained on PCA but loaded with the log (or viceversa).')
+                    print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                          ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
+                          ' the trained models, and that you ran `pip install .`. Also make sure' \
+                          ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
                     # the [:-4] should ensure we remove the .pkl suffix, 
                     # ensuring backward compatibility
                     loaded_variable_dict = pkg_resources.open_binary(trained_models, f'{filename[:-4]}.npz')
                     loaded_variable_dict = np.load(loaded_variable_dict, allow_pickle=True)
-                    variable_names = ['weights_', 'biases_', 'alphas_', 'betas_', \
-                                      'param_train_mean', 'param_train_std', \
-                                      'feature_train_mean', 'feature_train_std', \
-                                      'n_parameters', 'parameters', \
-                                      'n_modes', 'modes', \
-                                      'n_hidden', 'n_layers', 'architecture']
                     # boring, but needed as the exec approach did not work here
                     weights_ = loaded_variable_dict['arr_0'].tolist()['weights_']
                     biases_ = loaded_variable_dict['arr_0'].tolist()['biases_']
