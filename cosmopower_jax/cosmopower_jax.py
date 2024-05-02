@@ -38,8 +38,8 @@ class CosmoPowerJAX:
     filepath: string, default=None
         If you do not specify a filename, you can specify the full path where to upload the 
         pre-trained model from. Note that you cannot specify both `filename` and `filepath`, 
-        and that if you specify filepath you need to ensure that the format is the correct one.
-        CPJ will try to load it until it finds the match
+        and that if you specify `filepath` you need to ensure that the format is the correct one.
+        CPJ will try its best to load it depending on the format and the specified `probe`.
     """
     def __init__(self, probe, filename=None, filepath=None): 
         if probe not in ['cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log', 'custom_pca']:
