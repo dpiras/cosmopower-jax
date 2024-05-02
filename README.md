@@ -82,7 +82,7 @@ from cosmopower_jax.cosmopower_jax import CosmoPowerJAX as CPJ
 emulator_custom = CPJ(probe='custom_log', filename='<custom_filename>.pkl')
 ```
 
-where `<custom_filename>.pkl` is the filename (only, no path) with your custom model, and `custom_log` indicates that your model was trained on log-spectra, so all predictions will be returned elevated to the power of 10. Alternatively, you can pass `custom_pca`, and you will automatically get the predictions for a model trained with `PCAplusNN`. In this case the parameter dictionary should of course contain the parameter keys corresponding to your trained model.
+where `<custom_filename>.pkl` is the filename (only, no path) with your custom model, and `custom_log` indicates that your model was trained on log-spectra, so all predictions will be returned elevated to the power of 10. Alternatively, you can pass `custom_pca`, and you will automatically get the predictions for a model trained with `PCAplusNN`. In this case the parameter dictionary should of course contain the parameter keys corresponding to your trained model. We also allow the full `filepath` of the trained model to be indicated: in this case, do not specify `filename` and only indicate the full `filepath` including the suffix.
 
 We provide a full walkthrough and all instructions in the accompanying [Jupyter notebook](https://github.com/dpiras/cosmopower-jax/blob/main/notebooks/emulators_example.ipynb), and we describe `CosmoPower-JAX` in detail in the release paper. We currently do not provide the code to train a neural-network model in JAX; if you would like to re-train a JAX-based neural network on different data, [raise an issue](https://github.com/dpiras/cosmopower-jax/issues) or contact [Davide Piras](mailto:davide.piras@unige.ch).
 
