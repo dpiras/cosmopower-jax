@@ -35,8 +35,13 @@ class CosmoPowerJAX:
         so you will also probably need to pip install tensorflow.
         If you are using `TF>=2.14`, make sure you run the `convert_tf214.py` script first
         and follow the instructions there.
+    filepath: string, default=None
+        If you do not specify a filename, you can specify the full path where to upload the 
+        pre-trained model from. Note that you cannot specify both `filename` and `filepath`, 
+        and that if you specify `filepath` you need to ensure that the format is the correct one.
+        CPJ will try its best to load it depending on the format and the specified `probe`.
     """
-    def __init__(self, probe, filename=None): 
+    def __init__(self, probe, filename=None, filepath=None): 
         if probe not in ['cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log', 'custom_pca']:
             raise ValueError(f"Probe not known. It should be one of "
                          f"'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'; found '{probe}'") 
@@ -83,17 +88,34 @@ class CosmoPowerJAX:
         
         elif probe == 'custom_pca':
             try:
-                probe_file = pkg_resources.open_binary(trained_models, filename)
-                # in this case hyperparams and weights/biases were loaded separately
-                # so we have to zip them
-                weights_, biases_, alphas_, betas_, \
-                param_train_mean, param_train_std, \
-                feature_train_mean, feature_train_std, \
-                self.training_mean, self.training_std, \
-                parameters, n_parameters, \
-                modes, n_modes, \
-                n_pcas, self.pca_matrix, \
-                n_hidden, n_layers, architecture = pickle.load(probe_file)
+                if filename is not None:
+                    assert filepath == None, f'Specified filename {filename}, but also filepath {filepath};' \
+                                             f' to avoid ambiguities only specify one of them.'
+                    probe_file = pkg_resources.open_binary(trained_models, filename)
+                    # in this case hyperparams and weights/biases were loaded separately
+                    # so we have to zip them
+                    weights_, biases_, alphas_, betas_, \
+                    param_train_mean, param_train_std, \
+                    feature_train_mean, feature_train_std, \
+                    self.training_mean, self.training_std, \
+                    parameters, n_parameters, \
+                    modes, n_modes, \
+                    n_pcas, self.pca_matrix, \
+                    n_hidden, n_layers, architecture = pickle.load(probe_file)
+                elif filepath is not None:
+                    with open(filepath, 'rb') as probe_file:
+                        # in this case hyperparams and weights/biases were loaded separately
+                        # so we have to zip them
+                        weights_, biases_, alphas_, betas_, \
+                        param_train_mean, param_train_std, \
+                        feature_train_mean, feature_train_std, \
+                        self.training_mean, self.training_std, \
+                        parameters, n_parameters, \
+                        modes, n_modes, \
+                        n_pcas, self.pca_matrix, \
+                        n_hidden, n_layers, architecture = pickle.load(probe_file)
+                else:
+                    raise ValueError('You specified `custom_pca` as the probe, but no `filename` or `filepath`.')
             except ModuleNotFoundError:
                 # in this case, we fall back to the dictionary that is created
                 # when running the convert_tf214.py script, available in the root folder
@@ -106,7 +128,12 @@ class CosmoPowerJAX:
                       ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
                 # the [:-4] should ensure we remove the .pkl suffix,
                 # ensuring backward compatibility
-                loaded_variable_dict = pkg_resources.open_binary(trained_models, f'{filename[:-4]}.npz')
+                if filename is not None:
+                    loaded_variable_dict = pkg_resources.open_binary(trained_models, f'{filename[:-4]}.npz')
+                elif filepath is not None:
+                    loaded_variable_dict = filepath
+                else:
+                    raise ValueError('You specified `custom_pca` as the probe, but no `filename` or `filepath`.')
                 loaded_variable_dict = np.load(loaded_variable_dict, allow_pickle=True)
                 # boring, but needed as the exec approach did not work here, and we need to assign some properties
                 weights_ = loaded_variable_dict['arr_0'].tolist()['weights_']
@@ -139,15 +166,28 @@ class CosmoPowerJAX:
                 # first we try the standard approach, which will fail if TF>=2.14
                 # since TF removed support for pickle
                 try:
-                    # in this case hyperparams and weights/biases were loaded separately
-                    # so we have to zip them
-                    probe_file = pkg_resources.open_binary(trained_models, filename)
-                    weights_, biases_, alphas_, betas_, \
-                    param_train_mean, param_train_std, \
-                    feature_train_mean, feature_train_std, \
-                    n_parameters, parameters, \
-                    n_modes, modes, \
-                    n_hidden, n_layers, architecture = pickle.load(probe_file)
+                    if filename is not None:
+                        assert filepath == None, f'Specified filename {filename}, but also filepath {filepath};' \
+                                                 f' to avoid ambiguities only specify one of them.'
+                        # in this case hyperparams and weights/biases were loaded separately
+                        # so we have to zip them
+                        probe_file = pkg_resources.open_binary(trained_models, filename)
+                        weights_, biases_, alphas_, betas_, \
+                        param_train_mean, param_train_std, \
+                        feature_train_mean, feature_train_std, \
+                        n_parameters, parameters, \
+                        n_modes, modes, \
+                        n_hidden, n_layers, architecture = pickle.load(probe_file)
+                    elif filepath is not None:
+                        with open(filepath, 'rb') as probe_file:
+                            weights_, biases_, alphas_, betas_, \
+                            param_train_mean, param_train_std, \
+                            feature_train_mean, feature_train_std, \
+                            n_parameters, parameters, \
+                            n_modes, modes, \
+                            n_hidden, n_layers, architecture = pickle.load(probe_file)
+                    else:
+                        raise ValueError('You specified `custom_log` as the probe, but no `filename` or `filepath`.')
                 except ModuleNotFoundError:
                     # in this case, we fall back to the dictionary that is created
                     # when running the convert_tf214.py script, available in the root folder
@@ -160,7 +200,12 @@ class CosmoPowerJAX:
                           ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
                     # the [:-4] should ensure we remove the .pkl suffix, 
                     # ensuring backward compatibility
-                    loaded_variable_dict = pkg_resources.open_binary(trained_models, f'{filename[:-4]}.npz')
+                    if filename is not None:
+                        loaded_variable_dict = pkg_resources.open_binary(trained_models, f'{filename[:-4]}.npz')
+                    elif filepath is not None:
+                        loaded_variable_dict = filepath
+                    else:
+                        raise ValueError('You specified `custom_log` as the probe, but no `filename` or `filepath`.')
                     loaded_variable_dict = np.load(loaded_variable_dict, allow_pickle=True)
                     # boring, but needed as the exec approach did not work here
                     weights_ = loaded_variable_dict['arr_0'].tolist()['weights_']
@@ -184,13 +229,54 @@ class CosmoPowerJAX:
                 weights = list(zip(weights_, biases_))
             else:
                 # most general case
-                probe_file = pkg_resources.open_binary(trained_models, f'{probe}.pkl')
-                weights, hyper_params, \
-                param_train_mean, param_train_std, \
-                feature_train_mean, feature_train_std, \
-                n_parameters, parameters, \
-                n_modes, modes, \
-                n_hidden, n_layers, architecture = pickle.load(probe_file)
+                if filepath is None:
+                    probe_file = pkg_resources.open_binary(trained_models, f'{probe}.pkl')
+                    weights, hyper_params, \
+                    param_train_mean, param_train_std, \
+                    feature_train_mean, feature_train_std, \
+                    n_parameters, parameters, \
+                    n_modes, modes, \
+                    n_hidden, n_layers, architecture = pickle.load(probe_file)
+                else:
+                    try:
+                        with open(filepath, 'rb') as probe_file:
+                            weights, hyper_params, \
+                            param_train_mean, param_train_std, \
+                            feature_train_mean, feature_train_std, \
+                            n_parameters, parameters, \
+                            n_modes, modes, \
+                            n_hidden, n_layers, architecture = pickle.load(probe_file)
+                    except:
+                        # in this case, we fall back to the dictionary that is created
+                        # when running the convert_tf214.py script, available in the root folder
+                        print('Tried to load pickle file from pre-trained model, but failed.')
+                        print('This usually means that you have TF>=2.14, or that you are loading a model' \
+                              ' that was trained on PCA but loaded with the log (or viceversa).')
+                        print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                              ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
+                              ' the trained models, and that you ran `pip install .`. Also make sure' \
+                              ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
+                        # the [:-4] should ensure we remove the .pkl suffix,
+                        # ensuring backward compatibility
+                        loaded_variable_dict = np.load(f'{filepath[:-4]}.npz', allow_pickle=True)
+                        weights = loaded_variable_dict['arr_0'].tolist()['weights']
+                        hyper_params = loaded_variable_dict['arr_0'].tolist()['hyper_params']
+                        param_train_mean = loaded_variable_dict['arr_0'].tolist()['param_train_mean']
+                        param_train_std = loaded_variable_dict['arr_0'].tolist()['param_train_std']
+                        feature_train_mean = loaded_variable_dict['arr_0'].tolist()['feature_train_mean']
+                        feature_train_std = loaded_variable_dict['arr_0'].tolist()['feature_train_std']
+                        n_parameters = loaded_variable_dict['arr_0'].tolist()['n_parameters']
+                        parameters = loaded_variable_dict['arr_0'].tolist()['parameters']
+                        n_modes = loaded_variable_dict['arr_0'].tolist()['n_modes']
+                        modes = loaded_variable_dict['arr_0'].tolist()['modes']
+                        n_hidden = loaded_variable_dict['arr_0'].tolist()['n_hidden']
+                        n_layers = loaded_variable_dict['arr_0'].tolist()['n_layers']
+                        architecture = loaded_variable_dict['arr_0'].tolist()['architecture']
+                    else:
+                        raise ValueError(f'You specified a custom probe {probe}, but no filepath,' \
+                                          ' or the filepath you specified is not a pickle file or' \
+                                          ' a npz dictionary.')
+
        
         # save useful attributes  
         self.probe = probe
