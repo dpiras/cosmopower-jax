@@ -5,6 +5,8 @@
 # and this creates the numpy file replacing the pickle file.
 # After running this script you should be able to run CPJ with TF>=2.14.
 # Inputs are name of the pkl file to convert, and whether pca was used or not.
+# NOTE: if you want to use `filepath` with TF>=2.14, make sure you adapt this script
+# so that you have the .npz dictionary in your `filepath` folder.
 
 import numpy as np
 import pickle
