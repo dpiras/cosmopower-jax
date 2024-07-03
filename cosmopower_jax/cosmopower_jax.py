@@ -116,7 +116,7 @@ class CosmoPowerJAX:
                         n_hidden, n_layers, architecture = pickle.load(probe_file)
                 else:
                     raise ValueError('You specified `custom_pca` as the probe, but no `filename` or `filepath`.')
-            except ModuleNotFoundError:
+            except:
                 # in this case, we fall back to the dictionary that is created
                 # when running the convert_tf214.py script, available in the root folder
                 print('Tried to load pickle file from pre-trained model, but failed.')
@@ -188,7 +188,7 @@ class CosmoPowerJAX:
                             n_hidden, n_layers, architecture = pickle.load(probe_file)
                     else:
                         raise ValueError('You specified `custom_log` as the probe, but no `filename` or `filepath`.')
-                except ModuleNotFoundError:
+                except:
                     # in this case, we fall back to the dictionary that is created
                     # when running the convert_tf214.py script, available in the root folder
                     print('Tried to load pickle file from pre-trained model, but failed.')
