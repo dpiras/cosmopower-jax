@@ -135,26 +135,62 @@ class CosmoPowerJAX:
                 else:
                     raise ValueError('You specified `custom_pca` as the probe, but no `filename` or `filepath`.')
                 loaded_variable_dict = np.load(loaded_variable_dict, allow_pickle=True)
+                if 'arr_0' in loaded_variable_dict:
+                    loaded_variable_dict = loaded_variable_dict['arr_0'].tolist()
                 # boring, but needed as the exec approach did not work here, and we need to assign some properties
-                weights_ = loaded_variable_dict['arr_0'].tolist()['weights_']
-                biases_ = loaded_variable_dict['arr_0'].tolist()['biases_']
-                alphas_ = loaded_variable_dict['arr_0'].tolist()['alphas_']
-                betas_ = loaded_variable_dict['arr_0'].tolist()['betas_']
-                param_train_mean = loaded_variable_dict['arr_0'].tolist()['param_train_mean']
-                param_train_std = loaded_variable_dict['arr_0'].tolist()['param_train_std']
-                feature_train_mean = loaded_variable_dict['arr_0'].tolist()['feature_train_mean']
-                feature_train_std = loaded_variable_dict['arr_0'].tolist()['feature_train_std']
-                self.training_mean = loaded_variable_dict['arr_0'].tolist()['training_mean']
-                self.training_std = loaded_variable_dict['arr_0'].tolist()['training_std']
-                n_parameters = loaded_variable_dict['arr_0'].tolist()['n_parameters']
-                parameters = loaded_variable_dict['arr_0'].tolist()['parameters']
-                n_modes = loaded_variable_dict['arr_0'].tolist()['n_modes']
-                modes = loaded_variable_dict['arr_0'].tolist()['modes']
-                n_pcas = loaded_variable_dict['arr_0'].tolist()['n_pcas']
-                self.pca_matrix = loaded_variable_dict['arr_0'].tolist()['pca_matrix']
-                n_hidden = loaded_variable_dict['arr_0'].tolist()['n_hidden']
-                n_layers = loaded_variable_dict['arr_0'].tolist()['n_layers']
-                architecture = loaded_variable_dict['arr_0'].tolist()['architecture']
+                n_parameters = loaded_variable_dict['n_parameters']
+                parameters = loaded_variable_dict['parameters']
+                n_modes = loaded_variable_dict['n_modes']
+                modes = loaded_variable_dict['modes']
+                n_hidden = loaded_variable_dict['n_hidden']
+                n_layers = loaded_variable_dict['n_layers']
+                architecture = loaded_variable_dict['architecture']
+                n_pcas = loaded_variable_dict['n_pcas']
+                try: self.pca_matrix = loaded_variable_dict['pca_matrix']
+                except: self.pca_matrix = loaded_variable_dict['pca_transform_matrix']
+                if "weights_" in loaded_variable_dict:
+                    # assign the list of weight arrays from 'weights_' directly
+                    weights_ = loaded_variable_dict["weights_"]
+                else:
+                    # use individual weight arrays if available
+                    weights_ = [loaded_variable_dict[f"W_{i}"] for i in range(n_layers)]
+                # repeat for biases, alphas and betas
+                if "biases_" in loaded_variable_dict:
+                    biases_ = loaded_variable_dict["biases_"]
+                else:
+                    biases_ = [loaded_variable_dict[f"b_{i}"] for i in range(n_layers)]
+                if "alphas_" in loaded_variable_dict:
+                    alphas_ = loaded_variable_dict["alphas_"]
+                else:
+                    alphas_ = [loaded_variable_dict[f"alphas_{i}"] for i in range(n_layers-1)]
+                if "betas_" in loaded_variable_dict:
+                    betas_ = loaded_variable_dict["betas_"]
+                else:
+                    betas_ = [loaded_variable_dict[f"betas_{i}"] for i in range(n_layers-1)]  
+                # attempt to load 'parameters_mean' or fall back to 'param_train_mean' (and analogous)
+                try: param_train_mean = loaded_variable_dict['parameters_mean']
+                except: param_train_mean = loaded_variable_dict['param_train_mean']
+                try: param_train_std = loaded_variable_dict['parameters_std']
+                except: param_train_std = loaded_variable_dict['param_train_std']
+                # some shenanigans to make sure we load the correct things...
+                if 'pca_mean' in loaded_variable_dict and 'feature_train_mean' in loaded_variable_dict:
+                    # this should be Hidde's case
+                    self.training_mean = loaded_variable_dict['feature_train_mean']
+                    self.training_std = loaded_variable_dict['feature_train_std']
+                    feature_train_mean = loaded_variable_dict['pca_mean']
+                    feature_train_std = loaded_variable_dict['pca_std']             
+                elif 'pca_mean' in loaded_variable_dict and 'feature_train_mean' not in loaded_variable_dict:
+                    # this should be Boris' case
+                    self.training_mean = loaded_variable_dict['features_mean']
+                    self.training_std = loaded_variable_dict['features_std']
+                    feature_train_mean = loaded_variable_dict['pca_mean']
+                    feature_train_std = loaded_variable_dict['pca_std']  
+                else:
+                    # this is the typical CP file
+                    self.training_mean = loaded_variable_dict['training_mean']
+                    self.training_std = loaded_variable_dict['training_std']
+                    feature_train_mean = loaded_variable_dict['feature_train_mean']
+                    feature_train_std = loaded_variable_dict['feature_train_std']                      
             hyper_params = list(zip(alphas_, betas_))
             # we also have to transpose all weights, since in JAX we did differently
             weights_ = [w.T for w in weights_]
@@ -207,22 +243,45 @@ class CosmoPowerJAX:
                     else:
                         raise ValueError('You specified `custom_log` as the probe, but no `filename` or `filepath`.')
                     loaded_variable_dict = np.load(loaded_variable_dict, allow_pickle=True)
+                    if 'arr_0' in loaded_variable_dict:
+                        loaded_variable_dict = loaded_variable_dict['arr_0'].tolist()
                     # boring, but needed as the exec approach did not work here
-                    weights_ = loaded_variable_dict['arr_0'].tolist()['weights_']
-                    biases_ = loaded_variable_dict['arr_0'].tolist()['biases_']
-                    alphas_ = loaded_variable_dict['arr_0'].tolist()['alphas_']
-                    betas_ = loaded_variable_dict['arr_0'].tolist()['betas_']
-                    param_train_mean = loaded_variable_dict['arr_0'].tolist()['param_train_mean']
-                    param_train_std = loaded_variable_dict['arr_0'].tolist()['param_train_std']
-                    feature_train_mean = loaded_variable_dict['arr_0'].tolist()['feature_train_mean']
-                    feature_train_std = loaded_variable_dict['arr_0'].tolist()['feature_train_std']
-                    n_parameters = loaded_variable_dict['arr_0'].tolist()['n_parameters']
-                    parameters = loaded_variable_dict['arr_0'].tolist()['parameters']
-                    n_modes = loaded_variable_dict['arr_0'].tolist()['n_modes']
-                    modes = loaded_variable_dict['arr_0'].tolist()['modes']
-                    n_hidden = loaded_variable_dict['arr_0'].tolist()['n_hidden']
-                    n_layers = loaded_variable_dict['arr_0'].tolist()['n_layers']
-                    architecture = loaded_variable_dict['arr_0'].tolist()['architecture']
+                    n_parameters = loaded_variable_dict['n_parameters']
+                    parameters = loaded_variable_dict['parameters']
+                    n_modes = loaded_variable_dict['n_modes']
+                    modes = loaded_variable_dict['modes']
+                    n_hidden = loaded_variable_dict['n_hidden']
+                    n_layers = loaded_variable_dict['n_layers']
+                    architecture = loaded_variable_dict['architecture']
+                    if "weights_" in loaded_variable_dict:
+                        # assign the list of weight arrays from 'weights_' directly
+                        weights_ = loaded_variable_dict["weights_"]
+                    else:
+                        # use individual weight arrays if available
+                        weights_ = [loaded_variable_dict[f"W_{i}"] for i in range(n_layers)]
+                    # repeat for biases, alphas and betas
+                    if "biases_" in loaded_variable_dict:
+                        biases_ = loaded_variable_dict["biases_"]
+                    else:
+                        biases_ = [loaded_variable_dict[f"b_{i}"] for i in range(n_layers)]
+                    if "alphas_" in loaded_variable_dict:
+                        alphas_ = loaded_variable_dict["alphas_"]
+                    else:
+                        alphas_ = [loaded_variable_dict[f"alphas_{i}"] for i in range(n_layers-1)]
+                    if "betas_" in loaded_variable_dict:
+                        betas_ = loaded_variable_dict["betas_"]
+                    else:
+                        betas_ = [loaded_variable_dict[f"betas_{i}"] for i in range(n_layers-1)]                        
+                    # attempt to load 'parameters_mean' or fall back to 'param_train_mean' (and analogous)
+                    try: param_train_mean = loaded_variable_dict['parameters_mean']
+                    except: param_train_mean = loaded_variable_dict['param_train_mean']
+                    try: param_train_std = loaded_variable_dict['parameters_std']
+                    except: param_train_std = loaded_variable_dict['param_train_std']
+                    try: feature_train_mean = loaded_variable_dict['features_mean']
+                    except: feature_train_mean = loaded_variable_dict['feature_train_mean']
+                    try: feature_train_std = loaded_variable_dict['features_std']
+                    except: feature_train_std = loaded_variable_dict['feature_train_std']
+                        
                 hyper_params = list(zip(alphas_, betas_))
                 # we also have to transpose all weights, since in JAX we did differently
                 weights_ = [w.T for w in weights_]
@@ -259,19 +318,28 @@ class CosmoPowerJAX:
                         # the [:-4] should ensure we remove the .pkl suffix,
                         # ensuring backward compatibility
                         loaded_variable_dict = np.load(f'{filepath[:-4]}.npz', allow_pickle=True)
-                        weights = loaded_variable_dict['arr_0'].tolist()['weights']
-                        hyper_params = loaded_variable_dict['arr_0'].tolist()['hyper_params']
-                        param_train_mean = loaded_variable_dict['arr_0'].tolist()['param_train_mean']
-                        param_train_std = loaded_variable_dict['arr_0'].tolist()['param_train_std']
-                        feature_train_mean = loaded_variable_dict['arr_0'].tolist()['feature_train_mean']
-                        feature_train_std = loaded_variable_dict['arr_0'].tolist()['feature_train_std']
-                        n_parameters = loaded_variable_dict['arr_0'].tolist()['n_parameters']
-                        parameters = loaded_variable_dict['arr_0'].tolist()['parameters']
-                        n_modes = loaded_variable_dict['arr_0'].tolist()['n_modes']
-                        modes = loaded_variable_dict['arr_0'].tolist()['modes']
-                        n_hidden = loaded_variable_dict['arr_0'].tolist()['n_hidden']
-                        n_layers = loaded_variable_dict['arr_0'].tolist()['n_layers']
-                        architecture = loaded_variable_dict['arr_0'].tolist()['architecture']
+                        if 'arr_0' in loaded_variable_dict:
+                            loaded_variable_dict = loaded_variable_dict['arr_0'].tolist()
+
+                        n_parameters = loaded_variable_dict['n_parameters']
+                        parameters = loaded_variable_dict['parameters']
+                        n_modes = loaded_variable_dict['n_modes']
+                        modes = loaded_variable_dict['modes']
+                        n_hidden = loaded_variable_dict['n_hidden']
+                        n_layers = loaded_variable_dict['n_layers']
+                        architecture = loaded_variable_dict['architecture']
+                        # in this case weights, biases, alphas and betas should be already all set up
+                        weights = loaded_variable_dict['weights']
+                        hyper_params = loaded_variable_dict['hyper_params']
+                        # and although this should not be needed, let's be conservative here
+                        try: param_train_mean = loaded_variable_dict['parameters_mean']
+                        except: param_train_mean = loaded_variable_dict['param_train_mean']
+                        try: param_train_std = loaded_variable_dict['parameters_std']
+                        except: param_train_std = loaded_variable_dict['param_train_std']
+                        try: feature_train_mean = loaded_variable_dict['features_mean']
+                        except: feature_train_mean = loaded_variable_dict['feature_train_mean']
+                        try: feature_train_std = loaded_variable_dict['features_std']
+                        except: feature_train_std = loaded_variable_dict['feature_train_std']
                     else:
                         raise ValueError(f'You specified a custom probe {probe}, but no filepath,' \
                                           ' or the filepath you specified is not a pickle file or' \
