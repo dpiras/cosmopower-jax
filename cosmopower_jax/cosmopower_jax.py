@@ -174,13 +174,13 @@ class CosmoPowerJAX:
                 except: param_train_std = loaded_variable_dict['param_train_std']
                 # some shenanigans to make sure we load the correct things...
                 if 'pca_mean' in loaded_variable_dict and 'feature_train_mean' in loaded_variable_dict:
-                    # this should be Hidde's case
+                    # this should be Boris' case
                     self.training_mean = loaded_variable_dict['feature_train_mean']
                     self.training_std = loaded_variable_dict['feature_train_std']
                     feature_train_mean = loaded_variable_dict['pca_mean']
                     feature_train_std = loaded_variable_dict['pca_std']             
                 elif 'pca_mean' in loaded_variable_dict and 'feature_train_mean' not in loaded_variable_dict:
-                    # this should be Boris' case
+                    # this should be Hidde's case
                     self.training_mean = loaded_variable_dict['features_mean']
                     self.training_std = loaded_variable_dict['features_std']
                     feature_train_mean = loaded_variable_dict['pca_mean']
