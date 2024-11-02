@@ -119,14 +119,14 @@ class CosmoPowerJAX:
             except:
                 # in this case, we fall back to the dictionary that is created
                 # when running the convert_tf214.py script, available in the root folder
-                print('Tried to load pickle file from pre-trained model, but failed.')
-                print('This usually means that you have TF>=2.14, or that you are loading a model' \
-                      ' that was trained on PCA but loaded with the log (or viceversa), or that' \
-                      ' you are loading a non-standard model from the cosmopower-organization repo.')
-                print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
-                      ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
-                      ' the trained models, and that you ran `pip install .`. Also make sure' \
-                      ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
+                # print('Tried to load pickle file from pre-trained model, but failed.')
+                # print('This usually means that you have TF>=2.14, or that you are loading a model' \
+                #       ' that was trained on PCA but loaded with the log (or viceversa), or that' \
+                #       ' you are loading a non-standard model from the cosmopower-organization repo.')
+                # print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                #       ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
+                #       ' the trained models, and that you ran `pip install .`. Also make sure' \
+                #       ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
                 # the [:-4] should ensure we remove the .pkl suffix,
                 # ensuring backward compatibility
                 if filename is not None:
