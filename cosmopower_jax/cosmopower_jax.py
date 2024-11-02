@@ -3,6 +3,7 @@ import numpy as np
 import jax.numpy as jnp
 from jax.nn import sigmoid
 from jax import jacfwd, jacrev
+from jax.errors import TracerArrayConversionError
 
 # to deal with the pre-saved models and PCA attributes
 try:
@@ -381,7 +382,12 @@ class CosmoPowerJAX:
                 parameters sorted according to desired order
         """
         if self.parameters is not None:
-            return np.stack([input_dict[k] for k in self.parameters], axis=1)
+            try:
+                return np.stack([input_dict[k] for k in self.parameters], axis=1)
+            except TracerArrayConversionError:
+                converted_dict = {k: jnp.array(v) if isinstance(v, list) else v for k, v in input_dict.items()}
+                return jnp.stack([converted_dict[k] for k in self.parameters], axis=1)
+
         else:
             return np.stack([input_dict[k] for k in input_dict], axis=1)
 
