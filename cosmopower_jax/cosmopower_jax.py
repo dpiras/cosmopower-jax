@@ -40,8 +40,10 @@ class CosmoPowerJAX:
         pre-trained model from. Note that you cannot specify both `filename` and `filepath`, 
         and that if you specify `filepath` you need to ensure that the format is the correct one.
         CPJ will try its best to load it depending on the format and the specified `probe`.
+    verbose: bool, default=True
+        Whether you want important warning or information to be displayed, or not.
     """
-    def __init__(self, probe, filename=None, filepath=None): 
+    def __init__(self, probe, filename=None, filepath=None, verbose=True): 
         if probe not in ['cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log', 'custom_pca']:
             raise ValueError(f"Probe not known. It should be one of "
                          f"'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'; found '{probe}'") 
@@ -119,14 +121,15 @@ class CosmoPowerJAX:
             except:
                 # in this case, we fall back to the dictionary that is created
                 # when running the convert_tf214.py script, available in the root folder
-                print('Tried to load pickle file from pre-trained model, but failed.')
-                print('This usually means that you have TF>=2.14, or that you are loading a model' \
-                      ' that was trained on PCA but loaded with the log (or viceversa), or that' \
-                      ' you are loading a non-standard model from the cosmopower-organization repo.')
-                print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
-                      ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
-                      ' the trained models, and that you ran `pip install .`. Also make sure' \
-                      ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
+                if verbose:
+                    print('Tried to load pickle file from pre-trained model, but failed.')
+                    print('This usually means that you have TF>=2.14, or that you are loading a model' \
+                          ' that was trained on PCA but loaded with the log (or viceversa), or that' \
+                          ' you are loading a non-standard model from the cosmopower-organization repo.')
+                    print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                          ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
+                          ' the trained models, and that you ran `pip install .`. Also make sure' \
+                          ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
                 # the [:-4] should ensure we remove the .pkl suffix,
                 # ensuring backward compatibility
                 if filename is not None:
@@ -228,14 +231,15 @@ class CosmoPowerJAX:
                 except:
                     # in this case, we fall back to the dictionary that is created
                     # when running the convert_tf214.py script, available in the root folder
-                    print('Tried to load pickle file from pre-trained model, but failed.')
-                    print('This usually means that you have TF>=2.14, or that you are loading a model' \
-                          ' that was trained on PCA but loaded with the log (or viceversa), or that' \
-                          ' you are loading a non-standard model from the cosmopower-organization repo.')
-                    print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
-                          ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
-                          ' the trained models, and that you ran `pip install .`. Also make sure' \
-                          ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
+                    if verbose:
+                        print('Tried to load pickle file from pre-trained model, but failed.')
+                        print('This usually means that you have TF>=2.14, or that you are loading a model' \
+                              ' that was trained on PCA but loaded with the log (or viceversa), or that' \
+                              ' you are loading a non-standard model from the cosmopower-organization repo.')
+                        print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                              ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
+                              ' the trained models, and that you ran `pip install .`. Also make sure' \
+                              ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
                     # the [:-4] should ensure we remove the .pkl suffix, 
                     # ensuring backward compatibility
                     if filename is not None:
@@ -310,14 +314,15 @@ class CosmoPowerJAX:
                     except:
                         # in this case, we fall back to the dictionary that is created
                         # when running the convert_tf214.py script, available in the root folder
-                        print('Tried to load pickle file from pre-trained model, but failed.')
-                        print('This usually means that you have TF>=2.14, or that you are loading a model' \
-                              ' that was trained on PCA but loaded with the log (or viceversa), or that' \
-                              ' you are loading a non-standard model from the cosmopower-organization repo.')
-                        print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
-                              ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
-                              ' the trained models, and that you ran `pip install .`. Also make sure' \
-                              ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
+                        if verbose:
+                            print('Tried to load pickle file from pre-trained model, but failed.')
+                            print('This usually means that you have TF>=2.14, or that you are loading a model' \
+                                  ' that was trained on PCA but loaded with the log (or viceversa), or that' \
+                                  ' you are loading a non-standard model from the cosmopower-organization repo.')
+                            print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                                  ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
+                                  ' the trained models, and that you ran `pip install .`. Also make sure' \
+                                  ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
                         # the [:-4] should ensure we remove the .pkl suffix,
                         # ensuring backward compatibility
                         loaded_variable_dict = np.load(f'{filepath[:-4]}.npz', allow_pickle=True)
