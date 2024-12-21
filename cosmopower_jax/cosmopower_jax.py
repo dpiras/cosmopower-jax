@@ -126,7 +126,7 @@ class CosmoPowerJAX:
                     print('This usually means that you have TF>=2.14, or that you are loading a model' \
                           ' that was trained on PCA but loaded with the log (or viceversa), or that' \
                           ' you are loading a non-standard model from the cosmopower-organization repo.')
-                    print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                    print('Falling back to the dictionary, in case this also fails or does not output the right shape' \
                           ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
                           ' the trained models, and that you ran `pip install .`. Also make sure' \
                           ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
@@ -236,7 +236,7 @@ class CosmoPowerJAX:
                         print('This usually means that you have TF>=2.14, or that you are loading a model' \
                               ' that was trained on PCA but loaded with the log (or viceversa), or that' \
                               ' you are loading a non-standard model from the cosmopower-organization repo.')
-                        print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                        print('Falling back to the dictionary, in case this also fails or does not output the right shape' \
                               ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
                               ' the trained models, and that you ran `pip install .`. Also make sure' \
                               ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
@@ -319,7 +319,7 @@ class CosmoPowerJAX:
                             print('This usually means that you have TF>=2.14, or that you are loading a model' \
                                   ' that was trained on PCA but loaded with the log (or viceversa), or that' \
                                   ' you are loading a non-standard model from the cosmopower-organization repo.')
-                            print('Falling back to the dictionary, if case this also fails or does not output the right shape' \
+                            print('Falling back to the dictionary, in case this also fails or does not output the right shape' \
                                   ' make sure you ran the `convert_tf214.py` script, and that a `.npz` file exists among' \
                                   ' the trained models, and that you ran `pip install .`. Also make sure' \
                                   ' that you are asking for the right probe between `custom_log` and `custom_pca`.')
