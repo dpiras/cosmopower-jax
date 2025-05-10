@@ -1,0 +1,9 @@
+[submodule "cosmology/nulcdm"]
+	path = cosmology/nulcdm
+	url = git@github.com:cosmopower-organization/mnu.git
+[submodule "cosmology/lcdm"]
+	path = cosmology/lcdm
+	url = git@github.com:cosmopower-organization/lcdm.git
+[submodule "cosmology/wcdm"]
+	path = cosmology/wcdm
+	url = git@github.com:cosmopower-organization/wcdm.git
