@@ -1,6 +1,16 @@
 # CosmoPower-JAX-for-PFS
 
+----------
+
+## Overview
+
 This is a fork of the original `cosmopower-jax` package. This fork serves as the input matter power spectrum for PFS cosmology forecast and future analyses that leverage differentiable forward models, e.g. for gradient-based sampling methods, e.g. Hamiltonian Monte Carlo.
+
+----------
+
+## Instructions
+
+Different cosmologies are contained in different submodules within `cosmology/`. To load any given cosmology instead of the default on, follow the instructions below for a custom model.
 
 ----------
 
