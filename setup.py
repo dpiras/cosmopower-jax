@@ -30,5 +30,5 @@ setup(
                       'jaxlib',
                       'matplotlib>=3.1.2',
                       'numpy>=1.17.4',
-                      ]
+                      'tensorflow<=2.13.0]
                       )
