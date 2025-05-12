@@ -7,3 +7,6 @@
 [submodule "cosmology/wcdm"]
 	path = cosmology/wcdm
 	url = git@github.com:cosmopower-organization/wcdm.git
+[submodule "cosmology/jense2024"]
+	path = cosmology/jense2024
+	url = git@github.com:cosmopower-organization/jense_2024_emulators.git
