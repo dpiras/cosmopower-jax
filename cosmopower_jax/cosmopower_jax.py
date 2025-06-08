@@ -386,9 +386,9 @@ class CosmoPowerJAX:
                 parameters sorted according to desired order
         """
         if self.parameters is not None:
-            return np.stack([input_dict[k] for k in self.parameters], axis=1)
+            return jnp.stack([input_dict[k] for k in self.parameters], axis=1)
         else:
-            return np.stack([input_dict[k] for k in input_dict], axis=1)
+            return jnp.stack([input_dict[k] for k in input_dict], axis=1)
 
     def _activation(self, x, a, b):
         """Non-linear activation function. Based on the original CosmoPower paper, Eq. A1.
