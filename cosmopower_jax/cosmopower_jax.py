@@ -374,7 +374,7 @@ class CosmoPowerJAX:
                                input_dict,
                                ):
         """
-        Sort input parameters. Takend verbatim from CP 
+        Sort input parameters. Taken verbatim from CP 
         (https://github.com/alessiospuriomancini/cosmopower/blob/main/cosmopower/cosmopower_NN.py#LL291C1-L308C73)
 
         Parameters:
