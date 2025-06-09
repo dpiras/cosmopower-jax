@@ -25,6 +25,8 @@ class CosmoPowerJAX:
         The probe being considered to make predictions. 
         Must be one of (the names are hopefully self-explanatory):
         'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'
+    no_log_output : bool, default=False
+        Whether you want the output prediction to be in log10.
     filename : string, default=None
         In case you want to restore from a custom file with the same pickle format
         as the provided ones, indicate the name to the .pkl file here.
@@ -43,7 +45,7 @@ class CosmoPowerJAX:
     verbose: bool, default=True
         Whether you want important warning or information to be displayed, or not.
     """
-    def __init__(self, probe, filename=None, filepath=None, verbose=True): 
+    def __init__(self, probe, no_log_output=False, filename=None, filepath=None, verbose=True): 
         if probe not in ['cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log', 'custom_pca']:
             raise ValueError(f"Probe not known. It should be one of "
                          f"'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'; found '{probe}'") 
@@ -398,7 +400,7 @@ class CosmoPowerJAX:
         return jnp.multiply(jnp.add(b, jnp.multiply(sigmoid(jnp.multiply(a, x)), jnp.subtract(1., b))), x)
 
     def _predict(self, weights, hyper_params, param_train_mean, param_train_std,
-                 feature_train_mean, feature_train_std, input_vec, predict_log=False):
+                 feature_train_mean, feature_train_std, input_vec):
         """ Forward pass through pre-trained network.
         In its current form, it does not make use of high-level frameworks like
         FLAX et similia; rather, it simply loops over the network layers.
@@ -420,8 +422,6 @@ class CosmoPowerJAX:
             The stored  standard deviation of the training features.
         input_vec : array of shape (n_samples, n_parameters) or (n_parameters)
             The cosmological parameters given as input to the network.
-        predict_log : bool, default=False
-            Whether to return the prediction in log-space.
             
         Returns
         -------
@@ -441,7 +441,7 @@ class CosmoPowerJAX:
 
         # Final layer prediction (no activations)
         w, b = weights[-1]
-        if self.probe in ['custom_log','custom_pca']:
+        if self.probe == 'custom_log' or self.probe == 'custom_pca':
             # in original CP models, we assumed a full final bias vector...
             preds = jnp.dot(layer_out[-1], w.T) + b
         else:   
@@ -450,8 +450,11 @@ class CosmoPowerJAX:
 
         # Undo the standardisation
         preds = preds * feature_train_std + feature_train_mean
-        if predict_log == True:
+
+        # For some background quantities like distances, return early as no further transformation needed
+        if self.no_log_output == True:
             return preds.squeeze()
+        # For the other probes, we proceed with either log or PCA transformation.
         if self.log == True:
             preds = 10**preds
         else:
@@ -461,7 +464,7 @@ class CosmoPowerJAX:
         predictions = preds.squeeze()
         return predictions
     
-    def predict(self, input_vec, predict_log=False):
+    def predict(self, input_vec):
         """ Emulate cosmological power spectrum, based on the probe specified as input.
         Need to provide in input the array (or the dictionary) of cosmological parameters.
         If input is a dictionary, we to convert it to an array internally.
@@ -472,10 +475,8 @@ class CosmoPowerJAX:
             The cosmological parameters given as input to the network.
             The order has to be:
             (for CMB) omega_b, omega_cdm, h, tau, n_s, ln10^10A_s
-            (for mPk) omega_b, omega_cdm, h, n_s, ln10^{10}A_s, (c_min, eta0), z
+            (for mPk) omega_b, omega_cdm, h, n_s, ln10^{10}A_s, (c_min, eta0), z 
             Alternatively, a dictionary can be passed, and we take care of the conversion internally.
-        predict_log : bool, default=False
-            Whether to return the prediction in log-space.
             
         Returns
         -------
@@ -491,13 +492,14 @@ class CosmoPowerJAX:
         assert len(input_vec.shape) == 2
         predictions = self._predict(self.weights, self.hyper_params, self.param_train_mean, 
                                     self.param_train_std, self.feature_train_mean, self.feature_train_std,
-                                    input_vec, predict_log=predict_log)
+                                    input_vec)
         if self.probe == 'mpk_nonlin':
             # multiply by linear power spectrum
             input_vec = jnp.concatenate((input_vec[:, :5],input_vec[:, 7:8]), axis=1)  
             predictions *= self._predict(self.weights_l, self.hyper_params_l, self.param_train_mean_l, 
                                          self.param_train_std_l, self.feature_train_mean_l, self.feature_train_std_l,
-                                         input_vec, predict_log=predict_log)
+                                         input_vec
+                                         )
         return predictions
     
     def derivative(self, input_vec, mode='forward'):
