@@ -50,6 +50,7 @@ class CosmoPowerJAX:
             raise ValueError(f"Probe not known. It should be one of "
                          f"'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'; found '{probe}'") 
         
+        self.no_log_output = no_log_output
         if probe in ['cmb_tt', 'cmb_ee', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log']:
             self.log = True
         else:
@@ -454,7 +455,7 @@ class CosmoPowerJAX:
         # For some background quantities like distances, return early as no further transformation needed
         if self.no_log_output == True:
             return preds.squeeze()
-        # For the other probes, we proceed with either log or PCA transformation.
+        # For the other probes, proceed with either log or PCA transformation.
         if self.log == True:
             preds = 10**preds
         else:
@@ -467,7 +468,7 @@ class CosmoPowerJAX:
     def predict(self, input_vec):
         """ Emulate cosmological power spectrum, based on the probe specified as input.
         Need to provide in input the array (or the dictionary) of cosmological parameters.
-        If input is a dictionary, we to convert it to an array internally.
+        If input is a dictionary, we convert it to an array internally.
         
         Parameters
         ----------
