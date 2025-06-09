@@ -24,9 +24,9 @@ class CosmoPowerJAX:
     probe : string
         The probe being considered to make predictions. 
         Must be one of (the names are hopefully self-explanatory):
-        'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'
-    no_log_output : bool, default=False
-        Whether you want the output prediction to be in log10.
+        'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'.
+    raw_output : bool, default=False
+        Whether you just want the raw output, applicable for background quantities like distances.
     filename : string, default=None
         In case you want to restore from a custom file with the same pickle format
         as the provided ones, indicate the name to the .pkl file here.
@@ -45,12 +45,12 @@ class CosmoPowerJAX:
     verbose: bool, default=True
         Whether you want important warning or information to be displayed, or not.
     """
-    def __init__(self, probe, no_log_output=False, filename=None, filepath=None, verbose=True): 
+    def __init__(self, probe, raw_output=False, filename=None, filepath=None, verbose=True): 
         if probe not in ['cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log', 'custom_pca']:
             raise ValueError(f"Probe not known. It should be one of "
                          f"'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'; found '{probe}'") 
         
-        self.no_log_output = no_log_output
+        self.raw_output = raw_output
         if probe in ['cmb_tt', 'cmb_ee', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log']:
             self.log = True
         else:
@@ -452,11 +452,11 @@ class CosmoPowerJAX:
         # Undo the standardisation
         preds = preds * feature_train_std + feature_train_mean
 
-        # For some background quantities like distances, return early as no further transformation needed
-        if self.no_log_output == True:
+        # For some background quantities like distances, output and return early the raw prediction, since no further transformation needed
+        if self.raw_output:
             return preds.squeeze()
         # For the other probes, proceed with either log or PCA transformation.
-        if self.log == True:
+        if self.log:
             preds = 10**preds
         else:
             preds = (preds@self.pca_matrix)*self.training_std + self.training_mean
