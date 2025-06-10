@@ -450,12 +450,13 @@ class CosmoPowerJAX:
         preds = preds * feature_train_std + feature_train_mean
         if self.log == True:
             preds = 10**preds
-        elif self.probe == 'custom':
-            return preds.squeeze()
         else:
-            preds = (preds@self.pca_matrix)*self.training_std + self.training_mean
-            if self.probe == 'cmb_pp':
-                preds = 10**preds
+            if self.probe == 'custom':
+                pass
+            else:
+                preds = (preds@self.pca_matrix)*self.training_std + self.training_mean
+                if self.probe == 'cmb_pp':
+                    preds = 10**preds
         predictions = preds.squeeze()
         return predictions
     
