@@ -24,7 +24,7 @@ class CosmoPowerJAX:
     probe : string
         The probe being considered to make predictions. 
         Must be one of (the names are hopefully self-explanatory):
-        'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'
+        'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca', 'custom'.
     filename : string, default=None
         In case you want to restore from a custom file with the same pickle format
         as the provided ones, indicate the name to the .pkl file here.
@@ -44,16 +44,16 @@ class CosmoPowerJAX:
         Whether you want important warning or information to be displayed, or not.
     """
     def __init__(self, probe, filename=None, filepath=None, verbose=True): 
-        if probe not in ['cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log', 'custom_pca']:
+        if probe not in ['cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log', 'custom_pca', 'custom']:
             raise ValueError(f"Probe not known. It should be one of "
-                         f"'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca'; found '{probe}'") 
+                         f"'cmb_tt', 'cmb_ee', 'cmb_te', 'cmb_pp', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', custom_log', 'custom_pca', 'custom'; found '{probe}'") 
         
         if probe in ['cmb_tt', 'cmb_ee', 'mpk_lin', 'mpk_boost', 'mpk_nonlin', 'custom_log']:
             self.log = True
         else:
             self.log = False
-            if probe == 'custom_pca':
-                # we deal with this case below
+            if probe in ['custom_pca', 'custom']:
+                # we deal with these cases below
                 pass
             else:
                 # prepare for PCA: load pre-trained PCA matrix, and mean and std dev of the training data
@@ -202,7 +202,7 @@ class CosmoPowerJAX:
             
         else:
             # Load pre-trained model
-            if probe == 'custom_log':
+            if probe in ['custom_log','custom']:
                 # first we try the standard approach, which will fail if TF>=2.14
                 # since TF removed support for pickle
                 try:
@@ -451,9 +451,12 @@ class CosmoPowerJAX:
         if self.log == True:
             preds = 10**preds
         else:
-            preds = (preds@self.pca_matrix)*self.training_std + self.training_mean
-            if self.probe == 'cmb_pp':
-                preds = 10**preds
+            if self.probe == 'custom':
+                pass
+            else:
+                preds = (preds@self.pca_matrix)*self.training_std + self.training_mean
+                if self.probe == 'cmb_pp':
+                    preds = 10**preds
         predictions = preds.squeeze()
         return predictions
     
