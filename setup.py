@@ -10,7 +10,7 @@ PACKAGENAME = 'cosmopower_jax'
 
 setup(
     name='cosmopower_jax',
-    version="0.5.6",
+    version="0.5.7",
     author='Davide Piras',
     author_email='davide.piras@unige.ch',
     description='Differentiable cosmological emulators',
