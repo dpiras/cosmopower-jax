@@ -439,7 +439,7 @@ class CosmoPowerJAX:
 
         # Final layer prediction (no activations)
         w, b = weights[-1]
-        if self.probe == 'custom_log' or self.probe == 'custom_pca':
+        if self.probe in ['custom_log','custom_pca','custom']:
             # in original CP models, we assumed a full final bias vector...
             preds = jnp.dot(layer_out[-1], w.T) + b
         else:   
