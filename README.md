@@ -53,12 +53,12 @@ Similarly, we can also compute derivatives like:
 
 Rather than passing an array, as in the original `CosmoPower` syntax you can also pass a dictionary:
 
-    cosmo_params = {'omega_b': [0.025],
-                    'omega_cdm': [0.11],
-                    'h': [0.68],
-                    'tau_reio': [0.1],
-                    'n_s': [0.97],
-                    'ln10^{10}A_s': [3.1],
+    cosmo_params = {'omega_b': np.array([0.025]),
+                    'omega_cdm': np.array([0.11]),
+                    'h': np.array([0.68]),
+                    'tau_reio': np.array([0.1]),
+                    'n_s': np.array([0.97]),
+                    'ln10^{10}A_s': np.array([3.1]),
                     }
     emulator = CPJ(probe='cmb_tt')
     emulator_predictions = emulator.predict(cosmo_params)
